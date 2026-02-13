@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Interview Question Creator - AI-Powered Q&A Generator</title>
+      <meta
+         name="description"
+         content="Generate interview questions and answers from PDF documents using AI"
+      />
+      <link
+         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+         rel="stylesheet"
+         integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
+         crossorigin="anonymous"
+      />
+
+      <style>
+         :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --dark-bg: #0f0c29;
+            --dark-secondary: #1a1537;
+         }
+
+         * {
+            transition: all 0.3s ease;
+         }
+
+         body {
+            background: var(--dark-bg);
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+         }
+
+         #result,
+         #download {
+            display: none;
+         }
+
+         .font-large {
+            font-size: 120px;
+         }
+
+         .header-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem 0;
+            margin-bottom: 3rem;
+         }
+
+         .header-section h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+         }
+
+         .header-section p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+         }
+
+         .upload-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: none;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+         }
+
+         .upload-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--primary-gradient);
+         }
+
+         .upload-icon {
+            font-size: 3rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+         }
+
+         .form-label {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+         }
+
+         .file-input-wrapper {
+            position: relative;
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            background: rgba(102, 126, 234, 0.05);
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+         }
+
+         .file-input-wrapper:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #764ba2;
+         }
+
+         .file-input-wrapper input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+         }
+
+         .file-input-label {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 1rem;
+         }
+
+         .file-info {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+         }
+
+         .generate-btn {
+            background: var(--primary-gradient);
+            border: none;
+            padding: 0.8rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+         }
+
+         .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+         }
+
+         .result-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: none;
+            padding: 1.5rem;
+         }
+
+         .loader-container {
+            padding: 4rem 2rem;
+         }
+
+         .loader-text {
+            color: #667eea;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            animation: pulse 2s ease-in-out infinite;
+         }
+
+         @keyframes pulse {
+            0%,
+            100% {
+               opacity: 1;
+            }
+            50% {
+               opacity: 0.5;
+            }
+         }
+
+         .download-container {
+            padding: 3rem 2rem;
+         }
+
+         .download-success {
+            color: #4facfe;
+            font-size: 4rem;
+            margin-bottom: 1rem;
+         }
+
+         .download-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 1rem;
+         }
+
+         .download-description {
+            color: #666;
+            margin-bottom: 2rem;
+         }
+
+         .download-btn-custom {
+            background: var(--success-gradient);
+            border: none;
+            padding: 1rem 3rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 10px 30px rgba(79, 172, 254, 0.4);
+         }
+
+         .download-btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(79, 172, 254, 0.6);
+            color: white;
+         }
+
+         .download-btn-custom i {
+            margin-right: 0.5rem;
+         }
+
+         .pdf-viewer {
+            border-radius: 15px;
+            overflow: hidden;
+         }
+
+         .fade-in {
+            animation: fadeIn 0.5s ease-in;
+         }
+
+         @keyframes fadeIn {
+            from {
+               opacity: 0;
+               transform: translateY(20px);
+            }
+            to {
+               opacity: 1;
+               transform: translateY(0);
+            }
+         }
+
+         .spinner-custom {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+            position: relative;
+         }
+
+         .spinner-custom::after {
+            content: "";
+            display: block;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 8px solid #667eea;
+            border-color: #667eea transparent #764ba2 transparent;
+            animation: spin 1.2s linear infinite;
+         }
+
+         @keyframes spin {
+            0% {
+               transform: rotate(0deg);
+            }
+            100% {
+               transform: rotate(360deg);
+            }
+         }
+      </style>
+   </head>
+   <body>
+      <!-- Header Section -->
+      <section class="header-section">
+         <div class="container">
+            <div class="row">
+               <div class="col-12 text-center">
+                  <h1>Interview Question Creator</h1>
+                  <p>Transform your PDF documents into comprehensive Q&A sets using AI</p>
+               </div>
+            </div>
+         </div>
+      </section>
+
+      <!-- Upload Section -->
+      <section class="mb-5">
+         <div class="container">
+            <div class="row justify-content-center">
+               <div class="col-lg-8 col-md-10">
+                  <div class="upload-card fade-in">
+                     <div class="text-center">
+                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <h3 class="mb-3" style="color: #333;">Upload Your Document</h3>
+                     </div>
+
+                     <div class="file-input-wrapper">
+                        <input type="file" class="form-control" id="pdf-file" accept=".pdf">
+                        <div>
+                           <i class="fas fa-file-pdf" style="font-size: 2.5rem; color: #667eea; margin-bottom: 1rem;"></i>
+                           <p class="file-input-label">Click to browse or drag and drop</p>
+                           <p class="file-info">PDF files only • Maximum 5 pages</p>
+                           <p class="file-info" id="file-name" style="color: #667eea; font-weight: 600; display: none;"></p>
+                        </div>
+                     </div>
+
+                     <div class="text-end">
+                        <button type="button" id="upload-btn" class="generate-btn">
+                           <i class="fas fa-magic"></i> Generate Q&A
+                        </button>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </section>
+      <!-- Results Section -->
+      <section id="result" class="fade-in">
+         <div class="container">
+            <div class="row">
+               <div class="col-lg-6 mb-4">
+                  <div class="result-card">
+                     <h5 class="mb-3" style="color: #333; font-weight: 600;">Document Preview</h5>
+                     <embed id="view-pdf" src="" class="pdf-viewer" width="100%" height="600px" />
+                  </div>
+               </div>
+               <div class="col-lg-6 mb-4">
+                  <div class="result-card">
+                     <div id="loader" class="loader-container text-center">
+                        <div class="spinner-custom"></div>
+                        <p class="loader-text">Analyzing your document...</p>
+                        <p style="color: #999; font-size: 0.9rem;">This may take a moment</p>
+                     </div>
+                     <div id="download" class="download-container text-center">
+                        <i class="fas fa-check-circle download-success"></i>
+                        <h4 class="download-title">Your Q&A is Ready!</h4>
+                        <p class="download-description">Click below to download your generated questions and answers</p>
+                        <a href="" id="download-btn" class="download-btn-custom" download>
+                           <i class="fas fa-download"></i> Download CSV
+                        </a>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </section>
+      <script
+         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+         integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+         crossorigin="anonymous"
+      ></script>
+      <script
+         src="https://kit.fontawesome.com/1da99de032.js"
+         crossorigin="anonymous"
+      ></script>
+      <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+      <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+
+      <script>
+         let result = document.getElementById("result");
+         let loader = document.getElementById("loader");
+         let download = document.getElementById("download");
+         let viewPdf = document.getElementById("view-pdf");
+         let downloadBtn = document.getElementById("download-btn");
+         let fileInput = document.getElementById("pdf-file");
+         let fileName = document.getElementById("file-name");
+
+         // Show selected file name
+         fileInput.addEventListener("change", function() {
+            if (this.files && this.files[0]) {
+               fileName.textContent = "Selected: " + this.files[0].name;
+               fileName.style.display = "block";
+            } else {
+               fileName.style.display = "none";
+            }
+         });
+
+         $(document).ready(function () {
+            $("#upload-btn").click(async function (event) {
+               event.preventDefault();
+               const formData = new FormData();
+               const fileInput = document.getElementById("pdf-file");
+               var file = fileInput.files[0];
+
+               if (!file) {
+                  Swal.fire({
+                     icon: "warning",
+                     title: "No File Selected",
+                     text: "Please select a PDF file to upload.",
+                     confirmButtonColor: "#667eea",
+                  });
+                  return;
+               }
+
+               formData.append("pdf_file", file);
+               formData.append("filename", file.name);
+               let response = await fetch("/upload", {
+                  method: "POST",
+                  body: formData,
+               });
+               processUploadResponse(response);
+            });
+         });
+
+         async function processUploadResponse(response) {
+            switch (response.status) {
+               case 400:
+                  Swal.fire({
+                     icon: "error",
+                     title: "Upload Failed",
+                     text: "Sorry, couldn't upload your PDF file.",
+                     confirmButtonColor: "#667eea",
+                  }).then(function () {
+                     window.location.reload();
+                  });
+                  break;
+               case 200:
+                  var json = await response.json();
+                  if (json.msg == "error") {
+                     Swal.fire({
+                        icon: "error",
+                        title: "File Too Large",
+                        text: "Maximum number of pages (5) exceeded.",
+                        confirmButtonColor: "#667eea",
+                     }).then(function () {
+                        window.location.reload();
+                     });
+                  } else {
+                     result.style.display = "block";
+                     loader.style.display = "block";
+                     download.style.display = "none";
+                     viewPdf.setAttribute("src", "../" + json.pdf_filename);
+                     viewPdf.setAttribute("preload", "auto");
+                     const formData = new FormData();
+                     formData.append("pdf_filename", json.pdf_filename);
+                     fetch("/analyze", {
+                        method: "POST",
+                        body: formData,
+                     }).then(processAnalyzeResponse);
+                  }
+
+                  break;
+               default:
+                  Swal.fire({
+                     icon: "error",
+                     title: "Server Error",
+                     text:
+                        "There is a " +
+                        response.status +
+                        " error. Please try again later.",
+                     confirmButtonColor: "#667eea",
+                  }).then(function () {
+                     window.location.reload();
+                  });
+            }
+         }
+
+         async function processAnalyzeResponse(response) {
+            switch (response.status) {
+               case 400:
+                  Swal.fire({
+                     icon: "error",
+                     title: "Analysis Failed",
+                     text: "Sorry, couldn't analyze your PDF file.",
+                     confirmButtonColor: "#667eea",
+                  }).then(function () {
+                     window.location.reload();
+                  });
+                  break;
+               case 200:
+                  loader.style.display = "none";
+                  download.style.display = "block";
+                  var json = await response.json();
+                  downloadBtn.setAttribute("href", "../" + json.output_file);
+                  break;
+               default:
+                  Swal.fire({
+                     icon: "error",
+                     title: "Server Error",
+                     text:
+                        "There is a " +
+                        response.status +
+                        " error. Please try again later.",
+                     confirmButtonColor: "#667eea",
+                  }).then(function () {
+                     window.location.reload();
+                  });
+            }
+         }
+      </script>
+   </body>
+</html>
