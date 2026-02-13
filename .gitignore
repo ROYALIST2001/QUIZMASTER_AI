@@ -1,0 +1,23 @@
+# Virtual environment
+venv/
+env/
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# IDE
+.vscode/
+.idea/
+
+# Uploaded docs (keep folder structure)
+static/docs/*
+!static/docs/.gitkeep
+
+# Output files
+static/output/*
+!static/output/.gitkeep
