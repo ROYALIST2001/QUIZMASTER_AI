@@ -1,11 +1,11 @@
 # Interview Question Creator
 
-An AI-powered web application that automatically generates interview questions and answers from PDF documents using LangChain and OpenAI GPT-3.5-turbo.
+An AI-powered web application that automatically generates interview questions and answers from PDF documents using LangChain and OpenAI GPT.
 
 ## Features
 
 - Upload PDF documents
-- Automatic question generation using GPT-3.5-turbo
+- Automatic question generation using GPT
 - Context-aware answer generation using FAISS vector retrieval
 - Export Q&A pairs to CSV format
 - Modern, responsive web UI
@@ -14,7 +14,7 @@ An AI-powered web application that automatically generates interview questions a
 ## Technologies Used
 
 - **Backend**: FastAPI, Python 3.13, Uvicorn
-- **AI/ML**: LangChain, LangChain Classic, OpenAI GPT-3.5-turbo, FAISS
+- **AI/ML**: LangChain, LangChain Classic, OpenAI GPT, FAISS
 - **PDF Processing**: pypdf
 - **Frontend**: HTML, CSS, Bootstrap 5, JavaScript, Jinja2 Templates
 - **Vector Store**: FAISS (Facebook AI Similarity Search)
@@ -86,7 +86,7 @@ The application will be available at `http://localhost:8080`
 2. **Text Splitting**: Splits content into chunks using TokenTextSplitter
    - Question generation: 10,000 token chunks with 200 token overlap
    - Answer generation: 1,000 token chunks with 100 token overlap
-3. **Question Generation**: Uses a refine chain with GPT-3.5-turbo to generate relevant interview questions
+3. **Question Generation**: Uses a refine chain with GPT to generate relevant interview questions
 4. **Vector Store Creation**: Creates FAISS index from document chunks with OpenAI embeddings
 5. **Answer Generation**: Uses RetrievalQA chain to generate context-aware answers
 
@@ -104,4 +104,4 @@ The application will be available at `http://localhost:8080`
 - Supported format: PDF only
 - Generated files are stored in `static/output/QA.csv`
 - Uploaded files are stored in `static/docs/`
-- Uses GPT-3.5-turbo model for both question and answer generation
+- Uses GPT model for both question and answer generation
